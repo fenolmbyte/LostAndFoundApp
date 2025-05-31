@@ -1,0 +1,24 @@
+postgres:
+  host: "postgres"
+  port: "5432"
+  username: "admin"
+  password: "admin"
+  db_name: "postgres"
+  ssl_mode: "disable"
+
+redis:
+  addr: "redis:6379"
+  password: ""
+  db: 0
+
+mongo:
+  uri: "mongodb://admin:admin@mongo:27017/?authSource=admin"
+  db_name: "lostandfound"
+
+s3:
+  endpoint: "http://minio:9000"
+  region: "us-east-1"
+  access_key: "minioadmin"
+  secret_key: "minioadmin"
+  bucket: "lostandfound"
+  use_ssl: false

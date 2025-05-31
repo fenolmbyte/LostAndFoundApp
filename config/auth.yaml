@@ -1,0 +1,2 @@
+token_ttl: 1h
+secret_key: "ITS_THE_SECRET_ACCESS_TOKEN_FOR_JWT"

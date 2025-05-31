@@ -1,0 +1,571 @@
+basePath: /
+definitions:
+  dto.CardResponse:
+    properties:
+      city:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      distance_m:
+        type: number
+      id:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      latitude:
+        type: number
+      longitude:
+        type: number
+      owner:
+        $ref: '#/definitions/dto.OwnerDTO'
+      preview_url:
+        type: string
+      status:
+        type: string
+      street:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.CreateCardRequest:
+    properties:
+      city:
+        type: string
+      description:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      latitude:
+        type: number
+      longitude:
+        type: number
+      preview_url:
+        type: string
+      status:
+        enum:
+        - lost
+        - found
+        type: string
+      street:
+        type: string
+      title:
+        type: string
+    required:
+    - city
+    - latitude
+    - longitude
+    - status
+    - title
+    type: object
+  dto.FileRequest:
+    properties:
+      content_type:
+        type: string
+      file_name:
+        minLength: 1
+        type: string
+    required:
+    - content_type
+    - file_name
+    type: object
+  dto.FileUploadResponse:
+    properties:
+      file_name:
+        type: string
+      presigned_url:
+        type: string
+      public_url:
+        type: string
+    type: object
+  dto.OwnerDTO:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      surname:
+        type: string
+      telegram:
+        type: string
+    type: object
+  dto.UpdateCardRequest:
+    properties:
+      city:
+        type: string
+      description:
+        minLength: 10
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      latitude:
+        type: number
+      longitude:
+        type: number
+      preview_url:
+        type: string
+      status:
+        enum:
+        - lost
+        - found
+        type: string
+      street:
+        type: string
+      title:
+        minLength: 3
+        type: string
+    type: object
+  dto.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        minLength: 3
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        minLength: 6
+        type: string
+      surname:
+        minLength: 3
+        type: string
+      telegram:
+        minLength: 4
+        type: string
+    type: object
+  dto.UserRegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        minLength: 3
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        minLength: 6
+        type: string
+      surname:
+        minLength: 3
+        type: string
+      telegram:
+        minLength: 4
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    - surname
+    - telegram
+    type: object
+  dto.UserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      surname:
+        type: string
+      telegram:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API для поиска и возврата потерянных вещей
+  title: LostAndFound API
+  version: "1.0"
+paths:
+  /api/cards:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные объявления
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCardRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Создано
+          schema:
+            type: string
+        "400":
+          description: Некорректный запрос
+          schema:
+            type: string
+        "401":
+          description: Неавторизован
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Создание объявления
+      tags:
+      - Cards
+  /api/cards/{id}:
+    delete:
+      parameters:
+      - description: ID объявления
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Некорректный запрос
+          schema:
+            type: string
+        "403":
+          description: Нет доступа
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Удалить объявление
+      tags:
+      - Cards
+    get:
+      parameters:
+      - description: ID объявления
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CardResponse'
+        "404":
+          description: Объявление не найдено
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Получить объявление по ID
+      tags:
+      - Cards
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID объявления
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Объявление
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Некорректный запрос
+          schema:
+            type: string
+        "401":
+          description: Неавторизован
+          schema:
+            type: string
+        "403":
+          description: Нет доступа
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Обновить объявление
+      tags:
+      - Cards
+  /api/cards/all:
+    get:
+      parameters:
+      - description: Статус объявления (lost/found)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CardResponse'
+            type: array
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Получить все объявления (по статусу)
+      tags:
+      - Cards
+  /api/cards/near:
+    get:
+      parameters:
+      - description: Широта
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Долгота
+        in: query
+        name: lon
+        required: true
+        type: number
+      - description: Радиус поиска (км)
+        in: query
+        name: radius
+        required: true
+        type: number
+      - description: Статус
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CardResponse'
+            type: array
+        "400":
+          description: Некорректные координаты
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Получить объявления поблизости
+      tags:
+      - Cards
+  /api/files/upload:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные о файле
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.FileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FileUploadResponse'
+        "400":
+          description: Некорректный запрос
+          schema:
+            type: string
+        "401":
+          description: Неавторизован
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Генерация URL для загрузки файла
+      tags:
+      - Files
+  /auth/logout:
+    post:
+      description: Инвалидирует JWT токен
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Выход из аккаунта
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Регистрирует нового пользователя
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserRegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: created
+          schema:
+            type: string
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Регистрация пользователя
+      tags:
+      - auth
+  /users:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Получить свой профиль
+      tags:
+      - users
+  /users/profile:
+    get:
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "404":
+          description: User not found
+          schema:
+            type: string
+      summary: Получить профиль пользователя по ID
+      tags:
+      - users
+  /users/update:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для обновления
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid request or no changes
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Error updating user
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Обновить свой профиль
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
